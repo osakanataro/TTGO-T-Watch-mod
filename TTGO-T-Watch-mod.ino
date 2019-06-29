@@ -18,14 +18,12 @@
 #include <pcf8563.h>
 #include <soc/rtc.h>
 #include "lv_ble.h"
+#include "wifi_setting.h"
 
 /*********************
  *      DEFINES
  *********************/
 #define TASK_QUEUE_MESSAGE_LEN      10
-
-const char* ssid     = "***********";
-const char* password = "***********";
 
 /**********************
  *
@@ -79,7 +77,7 @@ bool syncRtcBySystemTime()
     struct tm timeinfo;
     bool ret = false;
     int retry = 0;
-    configTzTime("CST-8", "pool.ntp.org");
+    configTzTime("JST-9", "pool.ntp.org");
     do {
         ret = getLocalTime(&timeinfo);
         if (!ret) {
