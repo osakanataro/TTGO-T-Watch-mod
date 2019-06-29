@@ -1790,6 +1790,7 @@ void lv_main_time_update(const char *time, const char *date)
 
 void lv_create_ttgo()
 {
+    return;
     if (!main_cont) {
         main_cont = lv_cont_create(lv_scr_act(), NULL);
         lv_obj_set_size(main_cont, LV_HOR_RES, LV_VER_RES);
