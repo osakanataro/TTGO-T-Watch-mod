@@ -24,6 +24,9 @@
  *********************/
 #define TASK_QUEUE_MESSAGE_LEN      10
 
+const char* ssid     = "***********";
+const char* password = "***********";
+
 /**********************
  *
  *  STATIC VARIABLES
@@ -165,6 +168,9 @@ void setup()
     syncSystemTimeByRtc();
 
     wifi_event_setup();
+    WiFi.begin(ssid,password);
+    syncRtcBySystemTime();
+    WiFi.disconnect(true);
 
     motion_task_init();
 
@@ -430,12 +436,13 @@ static void time_task(void *param)
                                                 BIT0,
                                                 pdFALSE, pdFALSE, portMAX_DELAY);
         if (bits & BIT0) {
-            RTC_Date dt = rtc.getDateTime();
-            time.tm_year =  dt.year - 1900;
-            time.tm_mon = dt.month - 1;
-            time.tm_mday = dt.day;
-            time.tm_hour = dt.hour;
-            time.tm_min = dt.minute;
+            struct tm dt;
+            getLocalTime(&dt);
+            time.tm_year =  dt.tm_year - 1900;
+            time.tm_mon = dt.tm_mon;
+            time.tm_mday = dt.tm_mday;
+            time.tm_hour = dt.tm_hour;
+            time.tm_min = dt.tm_min;
             event_data.type = MESS_EVENT_TIME;
             event_data.time.event = LVGL_TIME_UPDATE;
             event_data.time.time = time;
