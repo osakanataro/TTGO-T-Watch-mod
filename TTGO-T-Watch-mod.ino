@@ -446,7 +446,7 @@ static void time_task(void *param)
             event_data.time.time = time;
             xQueueSend(g_event_queue_handle, &event_data, portMAX_DELAY);
         }
-        delay(1000);
+        delay(10000);
     }
 }
 
