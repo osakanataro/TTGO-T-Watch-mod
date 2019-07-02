@@ -19,6 +19,8 @@
 #include <soc/rtc.h>
 #include "lv_ble.h"
 #include "wifi_setting.h"
+#include <time.h>    // requried for settimeofday 
+#include <sys/time.h>// requried for timeval
 
 /*********************
  *      DEFINES
@@ -116,6 +118,31 @@ void syncSystemTimeByRtc()
 {
     Serial.print("Read RTC :");
     Serial.println(rtc.formatDateTime(PCF_TIMEFORMAT_YYYY_MM_DD_H_M_S));
+    struct tm dt;
+    getLocalTime(&dt);
+    Serial.printf("getLocalTime is %d:%d:%d\n",dt.tm_hour,dt.tm_min,dt.tm_sec);
+    RTC_Date d = rtc.getDateTime();
+    Serial.printf("  %d,%d,%d,%d,%d,%d\n",d.hour,d.minute,d.second,d.day,d.month,d.year);
+    dt.tm_hour = d.hour;
+    dt.tm_min  = d.minute;
+    dt.tm_sec  = d.second;
+    dt.tm_mday  = d.day;
+    dt.tm_mon = d.month-1;
+    dt.tm_year = d.year-1900; 
+    time_t timertc = mktime(&dt);
+    Serial.print("RTC unixtime is ");
+    Serial.print(timertc);
+    Serial.print(" ,system unixtime is ");
+    time_t timesys = time(NULL);
+    Serial.println(timesys);
+    struct timeval tv ={
+      .tv_sec = timertc
+    };
+    settimeofday(&tv,NULL);
+    
+    getLocalTime(&dt);
+    Serial.printf("getLocalTime override RTC clock, %d:%d:%d\n",dt.tm_hour,dt.tm_min,dt.tm_sec);
+   
 }
 
 void setup()
@@ -163,7 +190,7 @@ void setup()
 
     rtc.begin(Wire1);
 
-    syncSystemTimeByRtc();
+    //syncSystemTimeByRtc();
 
     wifi_event_setup();
     WiFi.begin(ssid,password);
@@ -252,6 +279,7 @@ void wifi_handle(void *data)
 
         break;
     case LVGL_WIFI_CONFIG_TRY_CONNECT: {
+        Serial.println("LVGL_WIFI_CONFIG_TRY_CONNECT event");
         wifi_auth_t *auth = (wifi_auth_t *)p->ctx;
         wl_status_t ret = WiFi.begin(auth->ssid, auth->password);
         wifiTicker = new Ticker();
@@ -273,6 +301,7 @@ void power_handle(void *param)
     power_struct_t *p = (power_struct_t *)param;
     switch (p->event) {
     case LVGL_POWER_GET_MOINITOR:
+        Serial.println("LVGL_POWER_GET_MOINITOR event");
         pwmTicker.attach_ms(1000, [] {
             data.vbus_vol = axp.getVbusVoltage();
             data.vbus_cur = axp.getVbusCurrent();
@@ -282,9 +311,12 @@ void power_handle(void *param)
         });
         break;
     case LVGL_POWER_MOINITOR_STOP:
+        Serial.println("LVGL_POWER_MOINITOR_STOP event");
         pwmTicker.detach();
         break;
     case LVGL_POWER_IRQ:
+        Serial.println("");
+        Serial.println("LVGL_POWER_IRQ event");
         axp.readIRQ();
         if (axp.isVbusPlugInIRQ()) {
             charging_anim_start();
@@ -298,6 +330,8 @@ void power_handle(void *param)
         if (axp.isPEKShortPressIRQ()) {
             if (isBacklightOn()) {
                 // lv_task_enable(false);
+                Serial.println("");
+                Serial.println("PEKShortPressIRQ to off");
                 backlight_off();
                 display_sleep();
                 axp.setPowerOutPut(AXP202_LDO2, AXP202_OFF);
@@ -306,6 +340,7 @@ void power_handle(void *param)
                 // rtc_clk_cpu_freq_set(RTC_CPU_FREQ_80M);
                 rtc_clk_cpu_freq_set(RTC_CPU_FREQ_2M);
             } else {
+                Serial.println("PEKShortPressIRQ to on");
                 rtc_clk_cpu_freq_set(RTC_CPU_FREQ_240M);
                 // lv_task_enable(true);
                 bma423_enable_interrupt();
@@ -321,6 +356,7 @@ void power_handle(void *param)
         break;
 
     case LVGL_POWER_ENTER_SLEEP: {
+        Serial.println("LVGL_POWER_ENTER_SLEEP event");
         lv_create_ttgo();
         int level = backlight_getLevel();
         for (; level > 0; level -= 25) {
@@ -436,6 +472,9 @@ static void time_task(void *param)
         if (bits & BIT0) {
             struct tm dt;
             getLocalTime(&dt);
+            Serial.print("RTC time is ");
+            Serial.println(rtc.formatDateTime(PCF_TIMEFORMAT_YYYY_MM_DD_H_M_S));
+            Serial.printf("getLocalTime is %d:%d:%d\n",dt.tm_hour,dt.tm_min,dt.tm_sec);
             time.tm_year =  dt.tm_year - 1900;
             time.tm_mon = dt.tm_mon;
             time.tm_mday = dt.tm_mday;
