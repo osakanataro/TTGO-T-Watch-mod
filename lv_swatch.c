@@ -360,17 +360,22 @@ static void lv_pay_destroy()
 static lv_res_t lv_icon(lv_obj_t *par)
 {
     gContainer = lv_obj_create(par, NULL);
-    lv_obj_set_size(gContainer,  g_menu_view_width, g_menu_view_height);
-    lv_obj_set_style(gContainer, &lv_style_transp_fit);
-    lv_obj_t *img = lv_img_create(gContainer, NULL);
+    //lv_obj_set_size(gContainer,  g_menu_view_width, g_menu_view_height);
+    //lv_obj_set_style(gContainer, &lv_style_transp_fit);
+    //lv_obj_t *img = lv_img_create(gContainer, NULL);
+    lv_obj_set_size(main_cont,  LV_HOR_RES, LV_VER_RES);
+    lv_obj_set_style(main_cont, &lv_style_transp_fit);
+    lv_obj_t *img = lv_img_create(main_cont, NULL);
     lv_img_set_src(img, &img_ankou);
-    lv_obj_align(img, NULL, LV_ALIGN_CENTER, 0, 0);
+    //lv_obj_align(img, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_align(img, main_cont, LV_ALIGN_CENTER, 0, 0);
 
 }
 
 static void lv_icon_destroy()
 {
-    lv_obj_del(gContainer);
+    //lv_obj_del(gContainer);
+    lv_obj_del(main_cont);
     gContainer = NULL;
     gObjecter = NULL;
 }
