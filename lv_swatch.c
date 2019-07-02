@@ -171,6 +171,7 @@ LV_IMG_DECLARE(img_bluetooth);
 LV_IMG_DECLARE(img_alipay);
 LV_IMG_DECLARE(img_wechatpay);
 LV_IMG_DECLARE(img_qr);
+LV_IMG_DECLARE(img_ankou);
 
 typedef lv_res_t (*lv_menu_action_t) (lv_obj_t *obj);
 typedef void (*lv_menu_destory_t) (void);
@@ -249,6 +250,7 @@ static lv_res_t lv_power_setting(lv_obj_t *par);
 static lv_res_t lv_lora_setting(lv_obj_t *par);
 static lv_res_t lv_ble_setting(lv_obj_t *par);
 static lv_res_t lv_pay(lv_obj_t *par);
+static lv_res_t lv_icon(lv_obj_t *par);
 
 
 static void lv_gps_setting_destroy();
@@ -261,6 +263,7 @@ static void lv_lora_setting_destroy(void);
 static void lv_setting_destroy(void);
 static void lv_ble_setting_destroy();
 static void lv_pay_destroy();
+static void lv_icon_destroy();
 
 static lv_res_t lora_Sender(lv_obj_t *obj);
 static lv_res_t lora_Receiver(lv_obj_t *obj);
@@ -313,6 +316,7 @@ static lv_menu_struct_t menu_data[]  = {
     {.name = "GPS", .callback = lv_gps_setting, .destroy = lv_gps_setting_destroy, .src_img = &img_placeholder},
 #endif
 
+    {.name = "OSAKANA TARO", .callback = lv_icon, .destroy = lv_icon_destroy, .src_img = &img_ankou},
     {.name = "WiFi", .callback = lv_wifi_setting, .destroy = lv_wifi_setting_destroy, .src_img = &img_wifi},
     {.name = "Power", .callback = lv_power_setting, .destroy = lv_power_setting_destroy, .src_img = &img_power},
     {.name = "Setting", .callback = lv_setting, .destroy = lv_setting_destroy, .src_img = &img_setting},
@@ -342,6 +346,29 @@ static lv_res_t lv_pay(lv_obj_t *par)
 }
 
 static void lv_pay_destroy()
+{
+    lv_obj_del(gContainer);
+    gContainer = NULL;
+    gObjecter = NULL;
+}
+
+/*********************************************************************
+ *
+ *                          icon
+ *
+ * ******************************************************************/
+static lv_res_t lv_icon(lv_obj_t *par)
+{
+    gContainer = lv_obj_create(par, NULL);
+    lv_obj_set_size(gContainer,  g_menu_view_width, g_menu_view_height);
+    lv_obj_set_style(gContainer, &lv_style_transp_fit);
+    lv_obj_t *img = lv_img_create(gContainer, NULL);
+    lv_img_set_src(img, &img_ankou);
+    lv_obj_align(img, NULL, LV_ALIGN_CENTER, 0, 0);
+
+}
+
+static void lv_icon_destroy()
 {
     lv_obj_del(gContainer);
     gContainer = NULL;
