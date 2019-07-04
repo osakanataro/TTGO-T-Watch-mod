@@ -172,6 +172,7 @@ LV_IMG_DECLARE(img_alipay);
 LV_IMG_DECLARE(img_wechatpay);
 LV_IMG_DECLARE(img_qr);
 LV_IMG_DECLARE(img_ankou);
+LV_IMG_DECLARE(img_icon2);
 
 typedef lv_res_t (*lv_menu_action_t) (lv_obj_t *obj);
 typedef void (*lv_menu_destory_t) (void);
@@ -251,6 +252,7 @@ static lv_res_t lv_lora_setting(lv_obj_t *par);
 static lv_res_t lv_ble_setting(lv_obj_t *par);
 static lv_res_t lv_pay(lv_obj_t *par);
 static lv_res_t lv_icon(lv_obj_t *par);
+static lv_res_t lv_icon2(lv_obj_t *par);
 
 
 static void lv_gps_setting_destroy();
@@ -317,6 +319,7 @@ static lv_menu_struct_t menu_data[]  = {
 #endif
 
     {.name = "OSAKANA TARO", .callback = lv_icon, .destroy = lv_icon_destroy, .src_img = &img_ankou},
+    {.name = "OSAKANA TARO", .callback = lv_icon2, .destroy = lv_icon_destroy, .src_img = &img_icon2},
     {.name = "WiFi", .callback = lv_wifi_setting, .destroy = lv_wifi_setting_destroy, .src_img = &img_wifi},
     {.name = "Power", .callback = lv_power_setting, .destroy = lv_power_setting_destroy, .src_img = &img_power},
     {.name = "Setting", .callback = lv_setting, .destroy = lv_setting_destroy, .src_img = &img_setting},
@@ -366,8 +369,22 @@ static lv_res_t lv_icon(lv_obj_t *par)
     lv_obj_set_size(main_cont,  LV_HOR_RES, LV_VER_RES);
     lv_obj_set_style(main_cont, &lv_style_transp_fit);
     lv_obj_t *img = lv_img_create(main_cont, NULL);
-    lv_img_set_src(img, &img_ankou);
     //lv_obj_align(img, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_align(img, main_cont, LV_ALIGN_CENTER, 0, 0);
+
+}
+static lv_res_t lv_icon2(lv_obj_t *par)
+{
+    gContainer = lv_obj_create(par, NULL);
+    lv_obj_set_size(gContainer,  g_menu_view_width, g_menu_view_height);
+    lv_obj_set_style(gContainer, &lv_style_transp_fit);
+    lv_obj_t *img = lv_img_create(gContainer, NULL);
+    //lv_obj_set_size(main_cont,  LV_HOR_RES, LV_VER_RES);
+    //lv_obj_set_style(main_cont, &lv_style_transp_fit);
+    //lv_obj_t *img = lv_img_create(main_cont, NULL);
+    lv_img_set_src(img, &img_icon2);
+    lv_obj_align(img, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_img_set_auto_size(img,true);
     lv_obj_align(img, main_cont, LV_ALIGN_CENTER, 0, 0);
 
 }
@@ -1862,6 +1879,7 @@ void lv_main(void)
 
     lv_obj_t *wp = lv_img_create(main_cont, NULL);
     lv_img_set_src(wp, &img_bg1);
+    //lv_img_set_src(wp, &img_ankou);
     lv_obj_set_width(wp, LV_HOR_RES);
     lv_obj_set_protect(wp, LV_PROTECT_POS);
 

@@ -197,6 +197,8 @@ void setup()
     syncRtcBySystemTime();
     WiFi.disconnect(true);
 
+    syncSystemTimeByRtc();
+    
     motion_task_init();
 
 #if defined(UBOX_GPS_MODULE) || defined(ACSIP_S7XG_MODULE)
