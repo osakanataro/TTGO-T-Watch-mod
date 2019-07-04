@@ -171,10 +171,11 @@ void setup()
     lv_create_ttgo();
 
     int level = backlight_getLevel();
-    for (int level = 0; level < 255; level += 25) {
-        backlight_adjust(level);
-        delay(100);
-    }
+    //for (int level = 0; level < 255; level += 25) {
+    //    backlight_adjust(level);
+    //    delay(100);
+    //}
+    backlight_adjust(125);
 
     axp.enableIRQ(AXP202_ALL_IRQ, AXP202_OFF);
 
